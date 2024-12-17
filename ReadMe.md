@@ -1,0 +1,7 @@
+`OPENWEATHER_API_KEY=your_openweather_api_key
+WEATHERAPI_KEY=your_weatherapi_key
+NEWSAPI_KEY=your_newsapi_key
+GNEWS_KEY=your_gnews_api_key
+TRAFFIC_API_KEY=your_tomtom_api_key
+GEOCODING_API_KEY=your_openweathermap_api_key
+GEONAMES_USERNAME=your_geonames_username`
