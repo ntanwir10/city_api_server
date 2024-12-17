@@ -35,10 +35,11 @@ app.use(express.json());
 
 // Subscription Plans
 const rateLimits = {
-  free: { windowMs: 15 * 60 * 1000, max: 50 },
-  basic: { windowMs: 15 * 60 * 1000, max: 200 },
-  pro: { windowMs: 15 * 60 * 1000, max: 1000 },
-  ultra: { windowMs: 15 * 60 * 1000, max: 5000 },
+  free: { windowMs: 30 * 60 * 1000, max: 50 }, // 30 minutes in milliseconds with max 50 requests
+  basic: { windowMs: 20 * 60 * 1000, max: 200 }, // 20 minutes in milliseconds with max 200 requests
+  pro: { windowMs: 20 * 60 * 1000, max: 1000 }, // 20 minutes in milliseconds with max 1000 requests
+  ultra: { windowMs: 10 * 60 * 1000, max: 5000 }, // 10 minutes in milliseconds with max 5000 requests
+  ultra_premium: { windowMs: 5 * 60 * 1000, max: 999999 }, // 5 minitues in milliseconds with Effectively unlimited
 };
 const validPlans = Object.keys(rateLimits);
 
