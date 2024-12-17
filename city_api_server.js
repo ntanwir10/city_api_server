@@ -173,13 +173,20 @@ const axiosWithRotation = async (url) => {
 };
 
 // Fetch Weather Data
+// This function attempts to fetch weather data from multiple sources.
+// It first tries OpenWeatherMap API, and if that fails, it falls back to WeatherAPI.
+// If both APIs fail, it returns a message indicating weather data is unavailable.
+// The function returns an object containing the weather data and the source API used.
+// @param {string} cityName - The name of the city for which to fetch weather data.
+// @returns {object} - An object containing the weather data and the source API used.
 const fetchWeatherData = async (cityName) => {
   const weatherApiKey = process.env.OPENWEATHER_API_KEY;
   const weatherUrls = [
     `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&units=metric&appid=${weatherApiKey}`,
     `https://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHERAPI_KEY}&q=${cityName}&days=7`,
   ];
-
+  // Iterate through the weather API URLs, attempting to fetch data
+  // If a request succeeds, return the data and source API
   for (const url of weatherUrls) {
     try {
       const response = await axiosWithRotation(url);
@@ -188,17 +195,24 @@ const fetchWeatherData = async (cityName) => {
       console.warn(`Weather API fallback triggered for ${url}`);
     }
   }
+  // If all API calls fail, return an error message
   return { data: "Weather data unavailable", source: "None" };
 };
 
 // Fetch News Data
+// This function attempts to fetch news data related to the given city from multiple sources.
+// It first tries NewsAPI, and if that fails, it falls back to GNews.
+// If both APIs fail, it returns a message indicating news data is unavailable.
+// The function returns an object containing an array of news article titles and the source API used.
+// @param {string} cityName - The name of the city for which to fetch news data.
 const fetchNewsData = async (cityName) => {
   const newsApiKey = process.env.NEWSAPI_KEY;
   const newsUrls = [
     `https://newsapi.org/v2/everything?q=${cityName}&apiKey=${newsApiKey}`,
     `https://gnews.io/api/v4/search?q=${cityName}&lang=en&token=${process.env.GNEWS_KEY}`,
   ];
-
+  // Iterate through the news API URLs, attempting to fetch data
+  // If a request succeeds, return the article titles and source API
   for (const url of newsUrls) {
     try {
       const response = await axiosWithRotation(url);
@@ -210,10 +224,15 @@ const fetchNewsData = async (cityName) => {
       console.warn(`News API fallback triggered for ${url}`);
     }
   }
+  // If all API calls fail, return an error message
   return { data: "News data unavailable", source: "None" };
 };
 
 // Fetch Events Data
+// This function attempts to fetch event data for the given city from the Eventful API.
+// If the API call is successful, it returns an array of event titles and venue names.
+// If the API call fails, it returns a message indicating that event data is unavailable.
+// @param {string} cityName - The name of the city for which to fetch event data.
 const fetchEventsData = async (cityName) => {
   const eventsApiKey = process.env.EVENTS_API_KEY;
   const eventsUrl = `https://api.eventful.com/json/events/search?location=${cityName}&app_key=${eventsApiKey}`;
@@ -232,6 +251,11 @@ const fetchEventsData = async (cityName) => {
 };
 
 // Fetch Traffic Information
+// This function attempts to fetch traffic information for the given city.
+// It first uses a geocoding API (OpenWeatherMap) to get coordinates for the city.
+// Then, it uses those coordinates to fetch traffic data from TomTom Traffic API.
+// If either API call fails, it returns a message indicating that traffic data is unavailable.
+// @param {string} cityName - The name of the city for which to fetch traffic information.
 const fetchTrafficData = async (cityName) => {
   const trafficApiKey = process.env.TRAFFIC_API_KEY; // Ensure this is added to your .env file
   const geocodingApiKey = process.env.GEOCODING_API_KEY;
@@ -266,6 +290,13 @@ const fetchTrafficData = async (cityName) => {
   }
 };
 
+// Fetch City Information
+// This function tries to fetch basic city information (name, population, country, coordinates)
+// from multiple sources, using a fallback mechanism if one source fails.
+// It first tries GeoNames API, then Wikipedia API, and finally OpenWeatherMap Geocoding API.
+// If all sources fail, it returns an error message.
+// @param {string} cityName - The name of the city for which to fetch information.
+// @returns {object} - An object containing city information or an error message.
 const fetchCityInfo = async (cityName) => {
   const geoNamesUrl = `http://api.geonames.org/searchJSON?q=${cityName}&maxRows=1&username=${process.env.GEONAMES_USERNAME}`;
   const wikipediaUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${cityName}`;
@@ -321,6 +352,12 @@ const fetchCityInfo = async (cityName) => {
 };
 
 // Combined City API Endpoint
+// This endpoint handles requests for city information, combining data from various sources:
+// - City details (name, population, country, coordinates)
+// - Weather forecast
+// - News articles
+// - Events
+// - Traffic information
 app.get("/api/city/:cityName", async (req, res) => {
   const cityName = req.params.cityName;
 
